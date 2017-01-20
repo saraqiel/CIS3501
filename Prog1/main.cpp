@@ -54,7 +54,7 @@ int main() {
 /* START IMPORTPOKE CLASS */
 
 /*
- Description: Constructor, mports pokemon from user
+ Description: Constructor, imports pokemon from user
  PRE: 0 < loop < 11
  POST: loop pokemon will be added to pokeStops vector
 */
@@ -70,8 +70,8 @@ ImportPoke::ImportPoke(int loop){
 
 /*
  Description: Adds a pokemon to pokeStop
- PRE: name, x, y, and stp are all initialized and valid
- POST: a new Pokemon will be added to the back of pokeStops
+ PRE: name, x, y, stp, and pokeStop are all initialized
+ POST: a new Pokemon will be added to pokeStops depeneding on if others aready exist
  */
 
 void ImportPoke::addPokemon(string name, int x, int y, int stp) {
@@ -113,7 +113,7 @@ bool ImportPoke::inList(Pokemon mon, int &pos) {
 }
 
 /*
- Description: Returns all the pokemon in pokeStop
+ Description: Returns/Exports all the pokemon in pokeStop
  PRE: pokeStops is initialized and not empty
  POST: returns pokeStop
  */
@@ -143,20 +143,19 @@ void ImportPoke::printStops(){
 /* START POKEGO CLASS */
 
 /*
- Description: Constructor, puts the Pokemon correctly into pokeList and creates combinations
+ Description: Constructor, creates combinations from all imported Pokemon
  PRE: import is initialized and not empty
- POST: pokeList is created as well as combos
+ POST: combos is complete
  */
 
 PokeGo::PokeGo(vector< vector <Pokemon> > import) {
-    
     vector<Pokemon> blank;
     recurse(import, blank, import.size()-1);
 }
 
 /*
  Description: Recursive call to find all combinations
- PRE: pass and pos are initialized
+ PRE: pokeStop, pass, and pos are initialized
  POST: recursive call or the completed vector is pushed back
  */
 
