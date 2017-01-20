@@ -20,33 +20,33 @@ struct Pokemon { //Pokemon Struct, very important
 
 class ImportPoke {
 private:
-    vector <Pokemon> pokeStops;
+    vector < vector<Pokemon> > pokeStop;
     void addPokemon(string, int, int, int);
+    bool inList(Pokemon, int&);
+    
 public:
-    void import(int);
+    ImportPoke(int);
     void printStops();
-    vector <Pokemon> get();
+    vector < vector<Pokemon> > get();
 };
 
 class PokeGo {
 private:
-    vector < vector <Pokemon> > pokeList;
-    vector < vector <int> > combos;
-    bool inList(Pokemon, int&);
-    void recurse(vector<int>, int);
+    vector < vector <Pokemon> > combos;
+    void recurse(const vector< vector<Pokemon> >&,vector<Pokemon>, int);
+    
 public:
-    PokeGo(vector<Pokemon>);
+    PokeGo(vector< vector<Pokemon>>);
     void print();
 };
 
 int main() {
-    ImportPoke pokemon;
     int loop;
     cin >> loop;
-    pokemon.import(loop);
+    ImportPoke pokemon(loop);
     PokeGo go(pokemon.get());
     
-    //pokemon.printStops();
+    pokemon.printStops();
     go.print();
     return 0;
 }
@@ -54,12 +54,12 @@ int main() {
 /* START IMPORTPOKE CLASS */
 
 /*
- Description: Imports pokemon from user
+ Description: Constructor, mports pokemon from user
  PRE: 0 < loop < 11
  POST: loop pokemon will be added to pokeStops vector
 */
 
-void ImportPoke::import(int loop){
+ImportPoke::ImportPoke(int loop){
     for (int a=0; a<loop; a++) {
         string name;
         int x, y;
@@ -69,40 +69,75 @@ void ImportPoke::import(int loop){
 }
 
 /*
- Description: Adds a pokemon to the vector
+ Description: Adds a pokemon to pokeStop
  PRE: name, x, y, and stp are all initialized and valid
  POST: a new Pokemon will be added to the back of pokeStops
  */
 
 void ImportPoke::addPokemon(string name, int x, int y, int stp) {
     struct Pokemon temp;
+    int pos;
+    
     temp.name = name;
     temp.xPos = x;
     temp.yPos = y;
     temp.stop = stp;
-    pokeStops.push_back(temp); //actually adds them
+    
+    
+    if (!inList(temp, pos)) {
+        vector<Pokemon> tempV;
+        tempV.push_back(temp);
+        pokeStop.push_back(tempV);
+    } else {
+        pokeStop[pos].push_back(temp);
+    }
 }
 
 /*
- Description: Returns all the PokeStops
- PRE: pokeStops is initialized and not empty
- POST: returns pokeStops
+ Description: Checks to see if a Pokemon already exists
+ PRE: mon and pos is initialized
+ POST: returns false if not and true+pos if yes
  */
 
-vector <Pokemon> ImportPoke::get() {
-    return pokeStops;
+bool ImportPoke::inList(Pokemon mon, int &pos) {
+    if (pokeStop.empty()) {
+        return false;
+    }
+    for (int a=0; a<pokeStop.size(); a++) {
+        if (pokeStop[a][0].name == mon.name) {
+            pos = a;
+            return true;
+        }
+    }
+    return false;
+}
+
+/*
+ Description: Returns all the pokemon in pokeStop
+ PRE: pokeStops is initialized and not empty
+ POST: returns pokeStop
+ */
+
+vector < vector <Pokemon> > ImportPoke::get() {
+    return pokeStop;
 }
 
 /*
  Description: Prints all the stops, for debugging
  PRE: pokeStops is initialized and not empty
- POST: prints all stop numbers and pokemon in pokeStops
+ POST: prints all stop numbers and pokemon in pokeList
  */
 
 void ImportPoke::printStops(){
-    for (int a=0; a<pokeStops.size(); a++) {
-        cout << pokeStops[a].name << " at stop " << pokeStops[a].stop << endl;
+    cout << "stops:\n";
+    for (int a=0; a<pokeStop.size(); a++) {
+        cout << pokeStop[a][0].name << " ";
+        for (int b=0; b<pokeStop[a].size(); b++) {
+            cout << pokeStop[a][b].stop << " ";
+        }
+        cout << endl;
     }
+    cout << endl;
 }
 
 /* START POKEGO CLASS */
@@ -113,38 +148,10 @@ void ImportPoke::printStops(){
  POST: pokeList is created as well as combos
  */
 
-PokeGo::PokeGo(vector <Pokemon> import) {
-    for (int a=0; a<import.size(); a++) {
-        int pos;
-        if (!inList(import[a], pos)) {
-            vector<Pokemon> temp;
-            temp.push_back(import[a]);
-            pokeList.push_back(temp);
-        } else {
-            pokeList[pos].push_back(import[a]);
-        }
-    }
-    vector<int> blank;
-    recurse(blank, pokeList.size()-1);
-}
-
-/*
- Description: Checks to see if a Pokemon already exists
- PRE: mon and pos is initialized
- POST: returns false if not and true+pos if yes
- */
-
-bool PokeGo::inList(Pokemon mon, int &pos) {
-    if (pokeList.empty()) {
-        return false;
-    }
-    for (int a=0; a<pokeList.size(); a++) {
-        if (pokeList[a][0].name == mon.name) {
-            pos = a;
-            return true;
-        }
-    }
-    return false;
+PokeGo::PokeGo(vector< vector <Pokemon> > import) {
+    
+    vector<Pokemon> blank;
+    recurse(import, blank, import.size()-1);
 }
 
 /*
@@ -153,14 +160,14 @@ bool PokeGo::inList(Pokemon mon, int &pos) {
  POST: recursive call or the completed vector is pushed back
  */
 
-void PokeGo::recurse(vector <int> pass, int pos){
+void PokeGo::recurse(const vector< vector<Pokemon> > &pokeStop, vector <Pokemon> pass, int pos){
     if (pos<0) {
         reverse(pass.begin(), pass.end()); //revered because traversal is in reverse
         combos.push_back(pass);
     } else {
-        for (int a=0; a<pokeList[pos].size(); a++) {
-            pass.push_back(pokeList[pos][a].stop);
-            recurse(pass, pos-1);
+        for (int a=0; a<pokeStop[pos].size(); a++) {
+            pass.push_back(pokeStop[pos][a]);
+            recurse(pokeStop, pass, pos-1);
             pass.pop_back();
         }
     }
@@ -175,7 +182,7 @@ void PokeGo::recurse(vector <int> pass, int pos){
 void PokeGo::print(){
     for (int a=0; a<combos.size(); a++) {
         for (int b=0; b<combos[a].size(); b++) {
-            cout << combos[a][b] << " ";
+            cout << combos[a][b].stop << " ";
         }
         cout << endl;
     }
