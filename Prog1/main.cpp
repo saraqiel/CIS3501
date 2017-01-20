@@ -11,7 +11,7 @@
 
 using namespace std;
 
-struct Pokemon {
+struct Pokemon { //Pokemon Struct, very important
     string name;
     int xPos;
     int yPos;
@@ -53,6 +53,12 @@ int main() {
 
 /* START IMPORTPOKE CLASS */
 
+/*
+ Description: Imports pokemon from user
+ PRE: 0 < loop < 11
+ POST: loop pokemon will be added to pokeStops vector
+*/
+
 void ImportPoke::import(int loop){
     for (int a=0; a<loop; a++) {
         string name;
@@ -62,18 +68,36 @@ void ImportPoke::import(int loop){
     }
 }
 
+/*
+ Description: Adds a pokemon to the vector
+ PRE: name, x, y, and stp are all initialized and valid
+ POST: a new Pokemon will be added to the back of pokeStops
+ */
+
 void ImportPoke::addPokemon(string name, int x, int y, int stp) {
     struct Pokemon temp;
     temp.name = name;
     temp.xPos = x;
     temp.yPos = y;
     temp.stop = stp;
-    pokeStops.push_back(temp);
+    pokeStops.push_back(temp); //actually adds them
 }
+
+/*
+ Description: Returns all the PokeStops
+ PRE: pokeStops is initialized and not empty
+ POST: returns pokeStops
+ */
 
 vector <Pokemon> ImportPoke::get() {
     return pokeStops;
 }
+
+/*
+ Description: Prints all the stops, for debugging
+ PRE: pokeStops is initialized and not empty
+ POST: prints all stop numbers and pokemon in pokeStops
+ */
 
 void ImportPoke::printStops(){
     for (int a=0; a<pokeStops.size(); a++) {
@@ -82,6 +106,12 @@ void ImportPoke::printStops(){
 }
 
 /* START POKEGO CLASS */
+
+/*
+ Description: Constructor, puts the Pokemon correctly into pokeList and creates combinations
+ PRE: import is initialized and not empty
+ POST: pokeList is created as well as combos
+ */
 
 PokeGo::PokeGo(vector <Pokemon> import) {
     for (int a=0; a<import.size(); a++) {
@@ -98,6 +128,12 @@ PokeGo::PokeGo(vector <Pokemon> import) {
     recurse(blank, pokeList.size()-1);
 }
 
+/*
+ Description: Checks to see if a Pokemon already exists
+ PRE: mon and pos is initialized
+ POST: returns false if not and true+pos if yes
+ */
+
 bool PokeGo::inList(Pokemon mon, int &pos) {
     if (pokeList.empty()) {
         return false;
@@ -111,9 +147,15 @@ bool PokeGo::inList(Pokemon mon, int &pos) {
     return false;
 }
 
+/*
+ Description: Recursive call to find all combinations
+ PRE: pass and pos are initialized
+ POST: recursive call or the completed vector is pushed back
+ */
+
 void PokeGo::recurse(vector <int> pass, int pos){
     if (pos<0) {
-        reverse(pass.begin(), pass.end());
+        reverse(pass.begin(), pass.end()); //revered because traversal is in reverse
         combos.push_back(pass);
     } else {
         for (int a=0; a<pokeList[pos].size(); a++) {
@@ -123,6 +165,12 @@ void PokeGo::recurse(vector <int> pass, int pos){
         }
     }
 }
+
+/*
+ Description: Prints all the combinations
+ PRE: combos is initialized and not empty
+ POST: all combinations are printed
+ */
 
 void PokeGo::print(){
     for (int a=0; a<combos.size(); a++) {
