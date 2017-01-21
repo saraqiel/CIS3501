@@ -52,8 +52,8 @@ int main() {
     ImportPoke pokemon(loop);
     PokeGo go(pokemon.get(), pokemon.getStops());
     
-    pokemon.printStops();
-    go.print();
+    //pokemon.printStops();
+    //go.print();
     return 0;
 }
 
@@ -75,9 +75,9 @@ ImportPoke::ImportPoke(int loop){
 }
 
 /*
- Description: Adds a pokemon to pokeStop
- PRE: name, x, y, stp, and pokeStop are all initialized
- POST: a new Pokemon will be added to pokeStops depeneding on if others aready exist
+ Description: Adds a pokemon to pokeMon and pokeStop
+ PRE: name, x, y, stp, pokeStop, and pokeMon are all initialized
+ POST: a new Pokemon will be added to pokeMon depeneding on if others aready exist and to pokeStop
  */
 
 void ImportPoke::addPokemon(string name, int x, int y, int stp) {
@@ -90,6 +90,7 @@ void ImportPoke::addPokemon(string name, int x, int y, int stp) {
     temp.stop = stp;
     
     pokeStop.push_back(temp);
+    
     if (!inList(temp, pos)) {
         vector<Pokemon> tempV;
         tempV.push_back(temp);
@@ -119,14 +120,20 @@ bool ImportPoke::inList(Pokemon mon, int &pos) {
 }
 
 /*
- Description: Returns/Exports all the pokemon in pokeStop
+ Description: Returns/Exports all pokemon in pokeMon
  PRE: pokeStops is initialized and not empty
- POST: returns pokeStop
+ POST: returns pokeMon
  */
 
 vector < vector <Pokemon> > ImportPoke::get() {
     return pokeMon;
 }
+
+/*
+Description: Returns/Exports all stops in pokeStop
+PRE: pokeStops is initialized and not empty
+POST: returns pokeStop
+*/
 
 vector<Pokemon> ImportPoke::getStops() {
     return pokeStop;
@@ -134,7 +141,7 @@ vector<Pokemon> ImportPoke::getStops() {
 
 /*
  Description: Prints all the stops, for debugging
- PRE: pokeStops is initialized and not empty
+ PRE: pokeMon is initialized and not empty
  POST: prints all stop numbers and pokemon in pokeList
  */
 
@@ -153,23 +160,15 @@ void ImportPoke::printStops(){
 /* START POKEGO CLASS */
 
 /*
- Description: Constructor, creates combinations from all imported Pokemon
- PRE: import is initialized and not empty
- POST: combos is complete
+ Description: Constructor, creates combinations and permutations from all imported Pokemon 
+              then finds the shortest path to catch them all
+ PRE: import and stops are initialized and not empty
+ POST: mix is complete
  */
 
 PokeGo::PokeGo(vector< vector <Pokemon> > import, vector<Pokemon> stops) {
     vector<int> blank;
     recurse(import, blank, import.size()-1);
-    
-    //for (int a=0; a<mix.size(); a++) {
-    //    for (int b=0; b<mix[a].size(); b++) {
-    //        cout << mix[a][b] << " ";
-    //    }
-    //    cout << endl;
-    //}
-    
-    cout << "perms:\n";
     
     for (int a=0; a<mix.size(); a++) {
         mix[a].push_back(permute(stops, mix[a]));
@@ -184,7 +183,7 @@ PokeGo::PokeGo(vector< vector <Pokemon> > import, vector<Pokemon> stops) {
         }
     }
     
-    cout << "shortest:\n";
+    //cout << "shortest:\n";
     for (int a=0; a<mix[shortest].size(); a++) {
         cout << mix[shortest][a] << " ";
     }
@@ -210,10 +209,22 @@ void PokeGo::recurse(const vector< vector<Pokemon> > &pokeStop, vector <int> pas
     }
 }
 
+/*
+ Description: Calculated distance between two pokemon
+ PRE: mon1 and mon2 are initialized
+ POST: mon2x-mon1x+mon2y+mon1y
+ */
+
 int PokeGo::dist(Pokemon mon1, Pokemon mon2) {
-    cout << mon1.xPos << "->" << mon2.xPos << " - " << mon1.yPos << "->" << mon2.yPos;
+    //cout << mon1.xPos << "->" << mon2.xPos << " - " << mon1.yPos << "->" << mon2.yPos;
     return (abs(mon2.xPos-mon1.xPos) + abs(mon2.yPos - mon1.yPos));
 }
+
+/*
+ Description: Uses next_permutation to finad all permutations
+ PRE: stops and input are initialized
+ POST: input is passed back as the shortet path and the total distace is returned as an int
+ */
 
 int PokeGo::permute(const vector<Pokemon> &stops, vector<int> &input) {
     int shortest = INT_MAX;
@@ -226,21 +237,14 @@ int PokeGo::permute(const vector<Pokemon> &stops, vector<int> &input) {
     
     while (next_permutation(input.begin(), input.end())) {
         int dis=0;
-        
-        for (int a=0; a<input.size(); a++) {
-            cout << input[a] << " ";
-        }
-        cout << endl;
         dis += dist(zero, stops[input[0]-1]);
-        cout << endl;
-        
         for (int a=0; a<input.size()-1; a++) {
-            cout << input[a] << " to " << input[a+1] << " [";
+            //cout << input[a] << " to " << input[a+1] << " [";
             dis += dist(stops[input[a]-1], stops[input[a+1]-1]);
-            cout << "]\n";
+            //cout << "]\n";
         }
         dis += dist(stops[input[input.size()-1]-1], zero);
-        cout << endl << "dist: " << dis << endl << endl;
+        //cout << endl << "dist: " << dis << endl << endl;
         if (dis < shortest) {
             shortest = dis;
             temp = input;
@@ -251,9 +255,9 @@ int PokeGo::permute(const vector<Pokemon> &stops, vector<int> &input) {
 }
 
 /*
- Description: Prints all the combinations
- PRE: combos is initialized and not empty
- POST: all combinations are printed
+ Description: Prints all of mix
+ PRE: mix is initialized and not empty
+ POST: all of mix is printed
  */
 
 void PokeGo::print(){
