@@ -40,7 +40,6 @@ private:
     int dist(Pokemon, Pokemon);
     int permute(const vector<Pokemon>&, vector<int>&);
     
-    
 public:
     PokeGo(vector< vector<Pokemon>>, vector<Pokemon>);
     void print();
@@ -234,8 +233,7 @@ int PokeGo::permute(const vector<Pokemon> &stops, vector<int> &input) {
     zero.yPos = 0;
     
     sort(input.begin(), input.end());
-    
-    while (next_permutation(input.begin(), input.end())) {
+    do {
         int dis=0;
         dis += dist(zero, stops[input[0]-1]);
         for (int a=0; a<input.size()-1; a++) {
@@ -249,7 +247,8 @@ int PokeGo::permute(const vector<Pokemon> &stops, vector<int> &input) {
             shortest = dis;
             temp = input;
         }
-    }
+
+    } while (next_permutation(input.begin(), input.end()));
     input = temp;
     return shortest;
 }
