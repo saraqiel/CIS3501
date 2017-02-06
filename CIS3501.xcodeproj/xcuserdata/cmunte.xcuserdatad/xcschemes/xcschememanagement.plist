@@ -9,6 +9,11 @@
 			<key>orderHint</key>
 			<integer>0</integer>
 		</dict>
+		<key>Porg 2.xcscheme</key>
+		<dict>
+			<key>orderHint</key>
+			<integer>2</integer>
+		</dict>
 		<key>Prog1.xcscheme</key>
 		<dict>
 			<key>orderHint</key>
@@ -17,6 +22,11 @@
 	</dict>
 	<key>SuppressBuildableAutocreation</key>
 	<dict>
+		<key>6C9DB31F1E48D5E7008549C3</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
 		<key>6CEACEC21E3101D500A5D4FE</key>
 		<dict>
 			<key>primary</key>
