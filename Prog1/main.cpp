@@ -75,7 +75,7 @@ ImportPoke::ImportPoke(int loop){
 
 /*
  Description: Adds a pokemon to pokeMon and pokeStop
- PRE: name, x, y, stp, pokeStop, and pokeMon are all initialized
+ PRE: name, x > 0, y > 0, stp > 1, pokeStop, and pokeMon are all initialized
  POST: a new Pokemon will be added to pokeMon depeneding on if others aready exist and to pokeStop
  */
 
@@ -101,12 +101,12 @@ void ImportPoke::addPokemon(string name, int x, int y, int stp) {
 
 /*
  Description: Checks to see if a Pokemon already exists
- PRE: mon and pos is initialized
+ PRE: mon and pos are initialized
  POST: returns false if not and true+pos if yes
  */
 
 bool ImportPoke::inList(Pokemon mon, int &pos) {
-    if (pokeMon.empty()) {
+    if (pokeMon.empty()) { //stop out of bounds
         return false;
     }
     for (int a=0; a<pokeMon.size(); a++) {
@@ -120,7 +120,7 @@ bool ImportPoke::inList(Pokemon mon, int &pos) {
 
 /*
  Description: Returns/Exports all pokemon in pokeMon
- PRE: pokeStops is initialized and not empty
+ PRE: pokeMon is not empty
  POST: returns pokeMon
  */
 
@@ -130,7 +130,7 @@ vector < vector <Pokemon> > ImportPoke::get() {
 
 /*
 Description: Returns/Exports all stops in pokeStop
-PRE: pokeStops is initialized and not empty
+PRE: pokeStops is not empty
 POST: returns pokeStop
 */
 
@@ -162,12 +162,12 @@ void ImportPoke::printStops(){
  Description: Constructor, creates combinations and permutations from all imported Pokemon 
               then finds the shortest path to catch them all
  PRE: import and stops are initialized and not empty
- POST: mix is complete
+ POST: prints the shortest stop trip and distance
  */
 
 PokeGo::PokeGo(vector< vector <Pokemon> > import, vector<Pokemon> stops) {
     vector<int> blank;
-    recurse(import, blank, import.size()-1);
+    recurse(import, blank, import.size()-1); //gets all conbinations
     
     for (int a=0; a<mix.size(); a++) {
         mix[a].push_back(permute(stops, mix[a]));
@@ -191,7 +191,7 @@ PokeGo::PokeGo(vector< vector <Pokemon> > import, vector<Pokemon> stops) {
 
 /*
  Description: Recursive call to find all combinations
- PRE: pokeStop, pass, and pos are initialized
+ PRE: pokeStop and pass are initialized and pos>=0
  POST: recursive call or the completed vector is pushed back
  */
 
@@ -211,7 +211,7 @@ void PokeGo::recurse(const vector< vector<Pokemon> > &pokeStop, vector <int> pas
 /*
  Description: Calculated distance between two pokemon
  PRE: mon1 and mon2 are initialized
- POST: mon2x-mon1x+mon2y+mon1y
+ POST: return mon2x-mon1x+mon2y+mon1y
  */
 
 int PokeGo::dist(Pokemon mon1, Pokemon mon2) {
