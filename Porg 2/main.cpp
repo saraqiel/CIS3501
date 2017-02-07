@@ -13,6 +13,12 @@ struct QuadNode {
     char type;
     int level;
     QuadNode * quads[4];
+    QuadNode(){
+        quads[0]=nullptr;
+        quads[1]=nullptr;
+        quads[2]=nullptr;
+        quads[3]=nullptr;
+    }
 };
 
 class QuadTree {
@@ -22,6 +28,7 @@ private:
 public:
     QuadTree();
     char queryTree(int, int);
+    char digTree(QuadNode *, int, int, int);
     bool sameTree(QuadNode *, QuadNode *);
     int numBlack();
     int largestRepeat();
@@ -40,6 +47,8 @@ int main() { //iibbwwiwwbwwb
     QuadTree tree;
     tree.frmStr(input);
     tree.printTree();
+    tree.printImage();
+    //cout << tree.queryTree(10, 19) << endl;
     return 0;
 }
 
@@ -49,7 +58,6 @@ QuadTree::QuadTree() {
 
 void QuadTree::frmStr(string input) {
     stringstream stream(input);
-    
     dig(root, 0, 0, stream);
     
     cout << "done" << endl;
@@ -88,22 +96,62 @@ void QuadTree::dig(QuadNode *&root, int level, int quad, stringstream &stream) {
     }
 }
 
+char QuadTree::queryTree(int row, int col) {
+    return digTree(root, row, col, IMG_SIZE);
+}
 
+void QuadTree::printImage() {
+    //cout << queryTree(9, 18) << endl;
+    cout << " ";
+    for (int a=1; a<IMG_SIZE+1; a++) {
+        cout << a%10;
+    }
+    cout << endl;
+    for (int row=1; row < IMG_SIZE; row++) {
+        cout << row%10;
+        for (int col=0; col < IMG_SIZE; col++) {
+            cout << queryTree(row, col);
+        }
+        cout << row%10 << endl;
+    }
+    cout << " ";
+    for (int a=1; a<IMG_SIZE+1; a++) {
+        cout << a%10;
+    }
+    cout << endl;
+}
+
+char QuadTree::digTree(QuadNode *root, int row, int col, int img) {
+    if(root->type == 'b' || root->type == 'w'){
+        if(root->type == 'b') {
+            return '@';
+        } else {
+            return '.';
+        }
+    } else if (row <= img/2 && col < img/2) {
+        return digTree(root->quads[0], row, col, img/2);
+    } else if (row <= img/2 && col >= img/2) {
+        return digTree(root->quads[1], row, col-(img/2), img/2);
+    } else if (row > img/2 && col >= img/2) {
+        return digTree(root->quads[2], row-(img/2), col-(img/2), img/2);
+    } else if (row > img/2 && col < img/2) {
+        return digTree(root->quads[3], row-(img/2), col, img/2);
+    } else {
+        return '?';
+    }
+}
 
 void QuadTree::printTree() {
+    printElement(root);
     digPrint(root);
 }
 
 void QuadTree::digPrint(QuadNode * root) {
-    if(root != nullptr) {
-        for (int num=3; num >= 0; num--) {
-            printElement(root);
-            if (root->quads[num] != nullptr) {
-                digPrint(root->quads[num]);
-                
-            }
+    for(int quad = 3; quad >= 0; quad--) {
+        if(root->quads[quad] != nullptr) {
+            printElement(root->quads[quad]);
+            digPrint(root->quads[quad]);
         }
-        return;
     }
 }
 
