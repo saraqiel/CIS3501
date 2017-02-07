@@ -57,40 +57,59 @@ void QuadTree::frmStr(string input) {
 
 void QuadTree::dig(QuadNode *&root, int level, int quad, stringstream &stream) {
     char next;
-    if (stream >> next) {
-        if(next == 'i'){
-            root->level = level;
-            root->type = next;
-            root->quads[quad] = new QuadNode;
-            dig(root->quads[quad], level+1, 0, stream);
-            quad ++;
-        } else if (next == 'w' || next == 'b') {
-            root->type = next;
-            root->level = level;
-            dig(root, level, quad + 1, stream);
+    bool deeper = false;
+    while (stream >> next) {
+        //cout << "level: " << level << " quad: " << quad << " type: " << next << endl;
+        if(root->level < level) {
+            deeper = true;
         }
-        if (quad == 4){
+        root->quads[quad] = new QuadNode;
+        if(next=='i'){
+            if(deeper) {
+                //cout << "going deeper\n";
+                root->quads[quad]->type = next;
+                root->quads[quad]->level = level;
+                dig(root->quads[quad], level+1, 0, stream);
+            } else {
+                root->type = next;
+                root->level = level;
+                dig(root, level+1, 0, stream);
+            }
+            //cout << "set level: " << root->level << " set type: " << root->type << endl;
+            quad++;
+        } else {
+            root->quads[quad]->type = next;
+            root->quads[quad]->level = level;
+            quad++;
+        }
+        if(quad == 4){
             return;
         }
     }
 }
+
+
 
 void QuadTree::printTree() {
     digPrint(root);
 }
 
 void QuadTree::digPrint(QuadNode * root) {
-    for (int num=0; num < 4; num++) {
-        if (root->quads[num] != nullptr && root != nullptr) {
-            digPrint(root->quads[num]);
+    if(root != nullptr) {
+        for (int num=3; num >= 0; num--) {
             printElement(root);
+            if (root->quads[num] != nullptr) {
+                digPrint(root->quads[num]);
+                
+            }
         }
+        return;
     }
 }
 
 void QuadTree::printElement(QuadNode *node) {
-    for (int num=0; 0 < node->level*5; num++) {
+    for (int num=0; num < node->level*5; num++) {
         cout << " ";
     }
-    cout << node->type << " " << to_string(node->level+1);
+    cout << node->type << " " << to_string(node->level) << endl;
 }
