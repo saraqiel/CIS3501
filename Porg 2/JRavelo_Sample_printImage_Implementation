@@ -1,0 +1,67 @@
+class QuadTree
+{
+private:
+	char qaudMtrx[IMG_SIZE][IMG_SIZE];//make a matrix to store the image
+	QuadNode *root;
+	void initMtrx()//initialize the matrix, by default make them all spaces
+	{
+		for(int i = 0; i < IMG_SIZE; i++)
+			for(int j = 0; j < IMG_SIZE; j++)
+				qaudMtrx[i][j] = ' ';
+	}
+  ///<Summary>
+  ///the idea is that you navigate to the null children of a node
+  ///once found, you modify the matrix to store the '@' of size 8/2^level if the parent(par) is 'b'
+  ///so if the tree has 4 nodes(ibwbw), the blacks will consume 2*(4*4) space of the matrix:
+  ///bbbbwwww
+  ///bbbbwwww
+  ///wwwwbbbb
+  ///wwwwbbbb
+  ///</Summary>
+	void loader(QuadNode * n, int row, int col, char par, int lvl)
+	{
+		int span = IMG_SIZE/Math.Pow(2, lvl);
+		if(root == nullptr && par == 'b')
+		{
+      for(int i = row; i < span; i++)
+				for(int j = col; j < span; j++)
+		      	quadMtrx[i][j] = '@';
+    }
+		else
+		{//I wasn't able to test this part with Chris T., but you should just call the functions in this order
+    //the off-sets(row+span, cols+span) need to be adjusted/tested.
+			loader(root->quads[0], row, cols, root-type, lvl++);
+			loader(root->quads[1], row, cols+span, root-type, lvl++);
+			loader(root->quads[3], row+span, cols+span, root-type, lvl++);
+			loader(root->quads[2], row+delta, cols, root-type, lvl++);
+		}
+	}//end of loader()
+  void printMtrx()
+  {
+    for(int i = 0; i < IMG_SIZE; i++)
+    {
+			for(int j = 0; j < IMG_SIZE; j++)
+				cout << qaudMtrx[i][j];
+      cout << endl;
+    }
+  }
+  
+public:
+	QuadTree()
+	{
+		root = nullptr;
+		initMtrx();
+	}
+	void printImage()
+	{
+		loader(root,0,0,root->type, 0);
+    printMtrx();
+	}
+}//end of QuadTree
+
+int main()
+{
+	NodeTree bwTree;
+	//make the tree
+	bwTree.printImage();
+}//end of main
